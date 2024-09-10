@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+
+model Account {
+accountId Int @id @default(autoincrement())
+userId String @unique
+userPassword String
+userName String @unique
+createdAt DateTime @default(now())
+
+characters Characters[]
+
+@@map("Account")
+}
+
+model Items {
+  itemId Int @id @default(autoincrement())
+itemCode Int @unique
+itemName String @unique
+itemStat Json
+itemPrice Int
+
+inventory   CharacterInventory[]
+equippedItems CharacterEquippedItem[]
+
+@@map("Items")
+  
+}
+
+
+
+model Characters{
+characterId Int @id @default(autoincrement())
+accountId Int
+characterName String @unique
+characterHp Int @default(500)
+characterStr Int @default(100)
+userMoney Int @default(10000)
+
+account Account @relation(fields: [accountId], references: [accountId])
+inventory   CharacterInventory[]
+equippedItems CharacterEquippedItem[]
+@@map("Characters")
+}
+
+model CharacterInventory{
+Inventoryid Int @id @default(autoincrement())
+characterId Int
+itemId Int
+quantity Int
+
+character Characters @relation(fields:[characterId],references:[characterId],onDelete:Cascade)
+item Items @relation(fields:[itemId],references:[itemId])
+
+
+@@map("CharacterInventory")
+}
+
+model CharacterEquippedItem{
+  equippedItemsId Int @id @default(autoincrement())
+  characterId Int
+  itemId Int
+  slot String
+  
+  character Characters @relation(fields:[characterId],references:[characterId],onDelete:Cascade)
+  item Items @relation(fields:[itemId],references:[itemId])
+
+@@map("CharacterEquippedItem")
+}
