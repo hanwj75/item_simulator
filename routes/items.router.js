@@ -70,4 +70,21 @@ router.patch("/items/:itemCode", async (req, res, next) => {
   }
 });
 
+/*아이템 목록 조회 API*/
+
+router.get("/items", async (req, res, next) => {
+  try {
+    const items = await prisma.items.findMany({
+      select: {
+        itemCode: true,
+        itemName: true,
+        itemPrice: true,
+      },
+    });
+    return res.status(200).json(items);
+  } catch (error) {
+    throw new Error("서버에 오류가 발생했습니다.");
+  }
+});
+
 export default router;
