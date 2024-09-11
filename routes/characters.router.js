@@ -38,4 +38,36 @@ router.post("/characters", authMiddleware, async (req, res, next) => {
   }
 });
 
+//캐릭터 삭제 API
+router.delete(
+  "/characters/:characterId",
+  authMiddleware,
+  async (req, res, next) => {
+    const { characterId } = req.params;
+    const { accountId } = req.user;
+    try {
+      //캐릭터 조회
+      const character = await prisma.characters.findFirst({
+        where: { characterId: +characterId },
+      });
+
+      //캐릭터가 존재하지 않을시
+      if (!character) {
+        return res.status(404).json({ message: "캐릭터가 존재하지 않습니다." });
+      }
+      //캐릭터의 계정ID와 사용자의 계정ID가 일치하는지 확인
+      if (character.accountId !== accountId) {
+        return res.status(403).json({ message: "본인의 캐릭터가 아닙니다." });
+      }
+      //캐릭터 삭제
+      await prisma.characters.delete({
+        where: { characterId: +characterId },
+      });
+      return res.status(200).json({ message: "캐릭터가 삭제되었습니다." });
+    } catch (error) {
+      throw new Error("서버 오류가 발생했습니다.");
+    }
+  },
+);
+
 export default router;
