@@ -87,4 +87,23 @@ router.get("/items", async (req, res, next) => {
   }
 });
 
+/*아이템 상세 조회 API*/
+
+router.get("/items/:itemCode", async (req, res, next) => {
+  const { itemCode } = req.params;
+  try {
+    const item = await prisma.items.findFirst({
+      where: { itemCode: +itemCode },
+      select: {
+        itemCode: true,
+        itemName: true,
+        itemStat: true,
+        itemPrice: true,
+      },
+    });
+    return res.status(200).json(item);
+  } catch (error) {
+    throw new Error("서버에 오류가 발생했습니다.");
+  }
+});
 export default router;
