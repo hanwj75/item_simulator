@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 const env = process.env;
 const router = express.Router();
 
-/** 사용자 회원가입 API **/
+/* 사용자 회원가입 API */
 
 router.post("/sign-up", async (req, res, next) => {
   const { userId, userPassword, checkPassword, userName } = req.body;

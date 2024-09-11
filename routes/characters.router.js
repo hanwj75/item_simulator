@@ -1,10 +1,12 @@
 import express from "express";
 import { prisma } from "../utils/prisma/index.js";
 import authMiddleware from "../middlewaers/auth.middleware.js";
+import detailsAuthMiddleware from "../middlewaers/details.auth.middleware.js";
 
 const router = express.Router();
 
-//캐릭터 생성 API
+/*캐릭터 생성 API*/
+
 router.post("/characters", authMiddleware, async (req, res, next) => {
   const { characterName } = req.body;
   const accountId = req.user.accountId;
@@ -38,7 +40,8 @@ router.post("/characters", authMiddleware, async (req, res, next) => {
   }
 });
 
-//캐릭터 삭제 API
+/*캐릭터 삭제 API*/
+
 router.delete(
   "/characters/:characterId",
   authMiddleware,
@@ -67,6 +70,35 @@ router.delete(
     } catch (error) {
       throw new Error("서버 오류가 발생했습니다.");
     }
+  },
+);
+
+/*캐릭터 상세보기API*/
+
+router.get(
+  "/characters/:characterId",
+  detailsAuthMiddleware,
+  async (req, res, next) => {
+    const { characterId } = req.params;
+
+    //캐릭터 조회
+    const character = await prisma.characters.findFirst({
+      where: { characterId: +characterId },
+    });
+    if (!character) {
+      return res.status(404).json({ message: "존재하지 않는 캐릭터입니다." });
+    }
+    //존재하는 캐릭터를 조회할경우
+    const characterData = {
+      characterName: character.characterName,
+      characterHp: character.characterHp,
+      characterStr: character.characterStr,
+    };
+    //토큰이 있을경우에만 userMoney를 추가함
+    if (req.user) {
+      characterData.userMoney = character.userMoney;
+    }
+    return res.status(200).json(characterData);
   },
 );
 
