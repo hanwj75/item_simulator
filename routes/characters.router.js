@@ -102,4 +102,9 @@ router.get(
   },
 );
 
+/*캐릭터 아이템 구매 API*/
+
+// router.post('/characters/:characterId/buy', authMiddleware, async (req, res, next) => {
+//     const {itemCode,quantityt}
+// })
 export default router;
