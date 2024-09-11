@@ -81,10 +81,11 @@ router.post("/login", async (req, res, next) => {
     env.JWT_TOKEN_SECRETKEY,
     { expiresIn: "1h" },
   );
-  res.header("Authorization", `Bearer ${JWT_ACCESS_TOKEN}`);
+  res.header("authorization", `Bearer ${JWT_ACCESS_TOKEN}`);
 
   return res.status(200).json({
     message: "로그인에 성공했습니다.",
+    JWT_ACCESS_TOKEN: JWT_ACCESS_TOKEN,
   });
 });
 export default router;
