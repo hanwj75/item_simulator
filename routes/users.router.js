@@ -1,6 +1,9 @@
 import express from "express";
 import { prisma } from "../utils/prisma/index.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+
+const env = process.env;
 const router = express.Router();
 
 /** 사용자 회원가입 API **/
@@ -72,6 +75,14 @@ router.post("/login", async (req, res, next) => {
       .status(401)
       .json({ message: "아이디 또는 비밀번호가 일치하지 않습니다." });
   }
+  //jwt 토큰 생성
+  const JWT_ACCESS_TOKEN = jwt.sign(
+    { userId: user.userId },
+    env.JWT_TOKEN_SECRETKEY,
+    { expiresIn: "1h" },
+  );
+  res.header("Authorization", `Bearer ${JWT_ACCESS_TOKEN}`);
+
   return res.status(200).json({
     message: "로그인에 성공했습니다.",
   });
