@@ -47,4 +47,27 @@ router.post("/items", async (req, res, next) => {
   }
 });
 
+/*아이템 수정 API*/
+router.patch("/items/:itemCode", async (req, res, next) => {
+  const { itemCode } = req.params;
+  const { itemName, itemStat } = req.body;
+
+  try {
+    const updateItem = await prisma.items.update({
+      where: { itemCode: +itemCode },
+      data: {
+        itemName: itemName,
+        itemStat: itemStat,
+      },
+    });
+    return res.status(200).json({
+      itemCode: updateItem.itemCode,
+      itemName: updateItem.itemName,
+      itemStat: updateItem.itemStat,
+    });
+  } catch (error) {
+    throw new Error("서버에 오류가 발생했습니다.");
+  }
+});
+
 export default router;
