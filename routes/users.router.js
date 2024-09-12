@@ -31,6 +31,13 @@ router.post("/sign-up", async (req, res, next) => {
     if (isExistUser) {
       return res.status(409).json({ message: "이미 존재하는 아이디입니다." });
     }
+
+    const isExistUserName = await prisma.account.findUnique({
+      where: { userName },
+    });
+    if (isExistUserName) {
+      return res.status(409).json({ message: "이미 존재하는 이름입니다." });
+    }
     //비밀번호 해시화
     const hashedPassword = await bcrypt.hash(userPassword, 10);
 
